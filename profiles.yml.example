@@ -1,0 +1,12 @@
+greenplum_warehouse:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: sber_de
+      pass: secure_password
+      dbname: feature_store
+      schema: dbt_marts
+      threads: 4
