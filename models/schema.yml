@@ -1,0 +1,34 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: public
+    tables:
+      - name: raw_transactions
+        columns:
+          - name: transaction_id
+            tests: [unique, not_null]
+          - name: client_id
+            tests: [not_null]
+
+models:
+  - name: stg_transactions
+    columns:
+      - name: transaction_id
+        tests: [unique, not_null]
+      - name: amount
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_greater_than:
+              value: 0
+      - name: transaction_type
+        tests:
+          - accepted_values:
+              values: ['purchase', 'atm_withdrawal', 'transfer']
+
+  - name: client_features_mart
+    columns:
+      - name: client_id
+        tests: [unique, not_null]
+      - name: total_amount
+        tests: [not_null]
