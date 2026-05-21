@@ -1,0 +1,19 @@
+# dbt
+/target
+/dbt_packages
+/logs
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Local configs (never commit real credentials!)
+profiles.yml
+.env
