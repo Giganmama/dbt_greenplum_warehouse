@@ -1,0 +1,38 @@
+name: dbt CI
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with: { python-version: '3.10' }
+      - run: pip install sqlfluff
+      - run: sqlfluff lint models/
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: sber_de
+          POSTGRES_PASSWORD: secure_password
+          POSTGRES_DB: feature_store
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - run: pip install dbt-postgres sqlfluff
+      - run: cp profiles.yml.example profiles.yml
+      - run: dbt debug
+      - run: dbt deps
+      - run: dbt run
+      - run: dbt test
